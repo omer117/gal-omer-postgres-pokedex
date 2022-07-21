@@ -3,17 +3,19 @@ import fs from 'fs';
 import express, { Express } from 'express';
 import cors from 'cors';
 import { json } from 'body-parser';
-import { Pokemon } from 'src/client/shared/pokemon';
 import fetch from 'cross-fetch';
-import {createPokemonTable, InsertPokemonsTable } from './postgres';
 // import { Collection } from 'mongodb';
 import { writeData, handleJson, filePath } from './serverFunctions';
-import {Client} from 'pg'
+import { Client } from 'pg'
+
+
+
+import { selectPokemonTable } from './postgres';
 
 
 export const client = new Client({
     // connectionString: process.env.DATABASE_URL,
-    connectionString: "postgres://tfyftfbdnayrpr:87c6290df7f2c34ebf02e43620f0a6ad685e9e36d900d6598d4e89218f0a1159@ec2-107-22-122-106.compute-1.amazonaws.com:5432/d3sbp955mvpp55",  ssl: {
+    connectionString: "postgres://mdwcichlijeqci:c3103d6373cf31cdf5407a264213c77abdbe84de81c057dcd580b1e6cf97328d@ec2-3-219-229-143.compute-1.amazonaws.com:5432/dd6f3fguojv4v1",  ssl: {
        rejectUnauthorized: false
      }
    });
@@ -26,21 +28,18 @@ const root: string = path.join(process.cwd(), 'dist');
 
 app.use(express.static(root));
 
-let collection: Collection<Pokemon>;
-connect(create()).then(res => collection = res);
-
 app.use(express.static(root), (_req, _res, next) => {
     next();
 });
 
-// Run to get the data from the api and write it to the database
-app.get('/writeToMongo', (_req, res) => {
-    console.log("getting api to database");
+// Run to get the data from the data.json and write it to the database
+app.get('/writeToPostgras', (_req, res) => {
+    console.log("getting data.json to database");
     res.sendFile(path.join(root, 'index.html'));
     let pokemon_url =  "http://127.0.0.1:4000/getDataJson";
     fetch(pokemon_url)
       .then(res => res.json())
-      .then(pokemonsData => writeData(pokemonsData, collection))
+      .then(pokemonsData => writeData(pokemonsData))
       .catch(err => console.log(err));
 });
 
@@ -59,7 +58,7 @@ app.get('/getDataJson', (_req, res) => {
 
 // Run to get 100 pokemons based on the page
 app.get("/getData/page=:page", (req, res) => {
-  getPokemonsDB(collection, res, Number(req.params.page));
+  selectPokemonTable(client, res, Number(req.params.page));
 });
 
 app.get('*', (_req, res) => {
@@ -72,7 +71,7 @@ app.get('*', (_req, res) => {
   //await createPokemonTable(client);
   //await InsertPokemonsTable(client);
 
-  const port = process.env.PORT || 4002;
+  const port = process.env.PORT || 4000;
   app.listen(port, () => {
     console.log('Hosted: http://localhost:' + port);
   });
