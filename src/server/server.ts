@@ -33,7 +33,7 @@ app.use(express.static(root), (_req, _res, next) => {
 });
 
 // Run to get the data from the data.json and write it to the database
-app.get('/writeToPostgras', (_req, res) => {
+app.get('/writeToPostgres', (_req, res) => {
     console.log("getting data.json to database");
     res.sendFile(path.join(root, 'index.html'));
     let pokemon_url =  "http://127.0.0.1:4000/getDataJson";
@@ -68,8 +68,6 @@ app.get('*', (_req, res) => {
 (async () => {
 
   await client.connect();
-  //await createPokemonTable(client);
-  //await InsertPokemonsTable(client);
 
   const port = process.env.PORT || 4000;
   app.listen(port, () => {

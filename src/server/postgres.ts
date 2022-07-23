@@ -21,15 +21,14 @@ export async function deletePokemonTable(){
 export async function InsertPokemonsTable(pokemonArr: any) {   
     let text = "INSERT INTO pokemons (id ,name ,url ,img ,height ,weight ,types ,hp ,attack ,defense) VALUES " ;
     let text2: string = "";
-    // for (let i = 0; i < pokemonArr.length; i++) {
+    // for (let i = 0; i < pokemonArr.length; i++) {        
         for(let i = 0; i< pokemonArr.length;i++){
-        let a = (Object.values((pokemonArr[i])).slice(0, 10));
-        text2 += `(${a[0]},'${a[1]}','${a[2]}','${a[3]}','${a[4]}','${a[5]}',
-        '{${a[6]}}','${a[7]}','${a[8]}','${a[9]}'),`
+        let values = (Object.values((pokemonArr[i])).slice(0, 10));
+        text2 += `(${values[0]},'${values[1]}','${values[2]}','${values[3]}','${values[4]}','${values[5]}',
+        '{${values[6]}}','${values[7]}','${values[8]}','${values[9]}'),`
     }
     text2 = text + text2.substring(0,text2.length-1) + ";";
     client.query(text2).catch();
-    console.log(text2);
 }
 
 export async function selectPokemonTable(client: Client, res: any, page: number){
